@@ -1,4 +1,46 @@
 (function () {
+
+  /* ------------------------------------------
+     Прогресс-бар чтения
+     ------------------------------------------ */
+
+  var progressBar = document.createElement('div');
+  progressBar.id = 'read-progress';
+  document.body.appendChild(progressBar);
+
+  function updateProgress() {
+    var scrollTop = window.scrollY || document.documentElement.scrollTop;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = Math.min(progress, 100) + '%';
+  }
+
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+
+  /* ------------------------------------------
+     Счётчик прочитанных блоков
+     ------------------------------------------ */
+
+  var counter = document.createElement('div');
+  counter.id = 'block-counter';
+  counter.innerHTML = 'Прочитано блоков: <span id="block-count">0</span>';
+  document.body.appendChild(counter);
+
+  var countEl = document.getElementById('block-count');
+  var readCount = 0;
+
+  function updateCounter() {
+    countEl.textContent = readCount;
+    counter.classList.add('visible');
+  }
+
+
+  /* ------------------------------------------
+     Анимация появления + подсветка
+     ------------------------------------------ */
+
   var selectors = [
     'h1', 'h2', 'h3', 'h4',
     'div.nonum_head',
@@ -20,9 +62,15 @@
     'div.one_question'
   ];
 
+  var blockSelectors = [
+    'div.definition', 'div.theorem', 'div.lemma', 'div.axiom',
+    'div.citation', 'div.proof', 'div.notice', 'div.advice',
+    'div.attention', 'div.task', 'div.example', 'div.conclusion',
+    'div.internet', 'div.literature', 'div.question', 'div.one_question'
+  ];
+
   var targets = document.querySelectorAll(selectors.join(', '));
 
-  /* Если IntersectionObserver недоступен — просто показываем всё */
   if (!('IntersectionObserver' in window)) {
     targets.forEach(function (el) {
       el.style.opacity = '1';
@@ -31,44 +79,43 @@
     return;
   }
 
-  /* Сбрасываем анимацию из CSS — будем управлять через классы */
   targets.forEach(function (el) {
-    el.style.animationName = 'none';
     el.style.opacity = '0';
-
-    var tag = el.tagName.toLowerCase();
-    if (tag === 'h1' || tag === 'h2' || tag === 'h3' || tag === 'h4') {
-      el.dataset.animType = 'up';
-    } else {
-      el.dataset.animType = 'left';
-    }
+    el.style.transform = el.tagName.match(/^H[1-4]$/) || el.classList.contains('nonum_head')
+      ? 'translateY(10px)'
+      : 'translateX(-12px)';
+    el.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
   });
-
-  /* Вставляем keyframes если их ещё нет */
-  if (!document.getElementById('anim-keyframes')) {
-    var style = document.createElement('style');
-    style.id = 'anim-keyframes';
-    style.textContent = [
-      '@keyframes fadeUp {',
-      '  from { opacity: 0; transform: translateY(10px); }',
-      '  to   { opacity: 1; transform: translateY(0); }',
-      '}',
-      '@keyframes fadeLeft {',
-      '  from { opacity: 0; transform: translateX(-12px); }',
-      '  to   { opacity: 1; transform: translateX(0); }',
-      '}'
-    ].join('');
-    document.head.appendChild(style);
-  }
 
   var observer = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
       if (!entry.isIntersecting) return;
 
       var el = entry.target;
-      var type = el.dataset.animType === 'up' ? 'fadeUp' : 'fadeLeft';
 
-      el.style.animation = type + ' 0.45s ease both';
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+
+      /* Подсветка только для контентных блоков */
+      var isBlock = blockSelectors.some(function (sel) {
+        var tag = sel.split('.')[0];
+        var cls = sel.split('.')[1];
+        return el.tagName.toLowerCase() === tag && el.classList.contains(cls);
+      });
+
+      if (isBlock) {
+        el.classList.remove('anim-highlight');
+        void el.offsetWidth; /* reflow для перезапуска анимации */
+        el.classList.add('anim-highlight');
+
+        readCount++;
+        updateCounter();
+
+        el.addEventListener('animationend', function () {
+          el.classList.remove('anim-highlight');
+        }, { once: true });
+      }
+
       observer.unobserve(el);
     });
   }, { threshold: 0.08 });
@@ -76,4 +123,5 @@
   targets.forEach(function (el) {
     observer.observe(el);
   });
+
 })();
