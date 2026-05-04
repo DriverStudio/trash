@@ -1,0 +1,127 @@
+/* =============================================
+   АНИМАЦИИ ДЛЯ МЕТОДИЧЕК — без JS
+   ============================================= */
+
+
+/* ------------------------------------------
+   Keyframes
+   ------------------------------------------ */
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+
+/* ------------------------------------------
+   Заголовки
+   ------------------------------------------ */
+
+h1 { animation: fadeUp 0.5s ease both; }
+h2 { animation: fadeUp 0.5s ease 0.05s both; }
+h3, div.nonum_head { animation: fadeUp 0.5s ease 0.1s both; }
+h4 { animation: fadeUp 0.5s ease 0.1s both; }
+
+
+/* ------------------------------------------
+   Контентные блоки
+   ------------------------------------------ */
+
+div.definition  { animation: fadeLeft 0.45s ease 0.05s both; }
+div.theorem     { animation: fadeLeft 0.45s ease 0.1s  both; }
+div.lemma       { animation: fadeLeft 0.45s ease 0.1s  both; }
+div.axiom       { animation: fadeLeft 0.45s ease 0.1s  both; }
+div.citation    { animation: fadeLeft 0.45s ease 0.1s  both; }
+div.proof       { animation: fadeLeft 0.45s ease 0.1s  both; }
+div.notice      { animation: fadeLeft 0.45s ease 0.1s  both; }
+div.advice      { animation: fadeLeft 0.45s ease 0.1s  both; }
+div.attention   { animation: fadeLeft 0.45s ease 0.1s  both; }
+div.task        { animation: fadeLeft 0.45s ease 0.1s  both; }
+div.example     { animation: fadeLeft 0.45s ease 0.1s  both; }
+div.conclusion  { animation: fadeLeft 0.45s ease 0.1s  both; }
+div.internet    { animation: fadeLeft 0.45s ease 0.1s  both; }
+div.question    { animation: fadeLeft 0.45s ease 0.1s  both; }
+div.one_question { animation: fadeLeft 0.45s ease 0.1s both; }
+div.literature  { animation: fadeLeft 0.45s ease 0.1s  both; }
+
+
+/* ------------------------------------------
+   Hover на блоках
+   ------------------------------------------ */
+
+div.definition, div.theorem, div.lemma, div.axiom,
+div.citation, div.proof, div.notice, div.advice,
+div.attention, div.task, div.example, div.conclusion,
+div.internet, div.literature, div.question, div.one_question {
+  transition: box-shadow 0.25s ease;
+}
+
+div.definition:hover, div.theorem:hover, div.lemma:hover,
+div.axiom:hover, div.citation:hover, div.proof:hover,
+div.notice:hover, div.advice:hover, div.attention:hover,
+div.task:hover, div.example:hover, div.conclusion:hover,
+div.internet:hover, div.literature:hover, div.question:hover,
+div.one_question:hover {
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.07);
+}
+
+
+/* ------------------------------------------
+   Кнопки самоконтроля
+   ------------------------------------------ */
+
+.test .testbuttons input[type="button"] {
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease;
+}
+
+.test .testbuttons input[type="button"]:hover {
+  box-shadow: 0 2px 8px rgba(60, 56, 141, 0.12);
+}
+
+.test .testbuttons input[type="button"]:active {
+  transform: scale(0.97);
+}
+
+
+/* ------------------------------------------
+   Ссылки
+   ------------------------------------------ */
+
+a {
+  transition: opacity 0.2s ease;
+}
+
+a:hover {
+  opacity: 0.75;
+}
+
+
+/* ------------------------------------------
+   Изображения
+   ------------------------------------------ */
+
+p.img img {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+p.img img:hover {
+  transform: scale(1.015);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+/* ------------------------------------------
+   Отключить для тех, кто против анимаций
+   ------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
