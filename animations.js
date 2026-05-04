@@ -124,4 +124,43 @@
     observer.observe(el);
   });
 
+
+  /* ------------------------------------------
+     3D tilt при наведении мыши
+     ------------------------------------------ */
+
+  var tiltSelectors = [
+    'div.definition', 'div.theorem', 'div.lemma', 'div.axiom',
+    'div.citation', 'div.proof', 'div.notice', 'div.advice',
+    'div.attention', 'div.task', 'div.example', 'div.conclusion',
+    'div.internet', 'div.literature', 'div.question', 'div.one_question'
+  ];
+
+  var tiltBlocks = document.querySelectorAll(tiltSelectors.join(', '));
+
+  var MAX_TILT = 2; /* градусов */
+
+  tiltBlocks.forEach(function (el) {
+    el.style.willChange = 'transform, box-shadow';
+
+    el.addEventListener('mousemove', function (e) {
+      var rect = el.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width  - 0.5;
+      var y = (e.clientY - rect.top)  / rect.height - 0.5;
+
+      var rotateX = (-y * MAX_TILT).toFixed(2);
+      var rotateY = ( x * MAX_TILT).toFixed(2);
+
+      el.style.transition = 'transform 0.1s ease, box-shadow 0.1s ease';
+      el.style.transform = 'perspective(800px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg)';
+      el.style.boxShadow = '0 2px 12px rgba(0, 0, 0, 0.07)';
+    });
+
+    el.addEventListener('mouseleave', function () {
+      el.style.transition = 'transform 0.4s ease, box-shadow 0.4s ease';
+      el.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg)';
+      el.style.boxShadow = '';
+    });
+  });
+
 })();
