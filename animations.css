@@ -1,10 +1,57 @@
 /* =============================================
-   АНИМАЦИИ ДЛЯ МЕТОДИЧЕК — без JS
+   АНИМАЦИИ ДЛЯ МЕТОДИЧЕК
    ============================================= */
 
+/* ------------------------------------------
+   Прогресс-бар чтения
+   ------------------------------------------ */
+
+#read-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: #336bd3;
+  z-index: 9999;
+  transition: width 0.1s linear;
+}
 
 /* ------------------------------------------
-   Keyframes
+   Счётчик прочитанных блоков
+   ------------------------------------------ */
+
+#block-counter {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  padding: 10px 18px;
+  background: white;
+  border: 1px solid #dadde5;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1b1b1b;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+#block-counter.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#block-counter span {
+  color: #336bd3;
+}
+
+/* ------------------------------------------
+   Keyframes появления
    ------------------------------------------ */
 
 @keyframes fadeUp {
@@ -17,38 +64,19 @@
   to   { opacity: 1; transform: translateX(0); }
 }
 
-
 /* ------------------------------------------
-   Заголовки
+   Подсветка блока при появлении
    ------------------------------------------ */
 
-h1 { animation: fadeUp 0.5s ease both; }
-h2 { animation: fadeUp 0.5s ease 0.05s both; }
-h3, div.nonum_head { animation: fadeUp 0.5s ease 0.1s both; }
-h4 { animation: fadeUp 0.5s ease 0.1s both; }
+@keyframes highlightBlock {
+  0%   { box-shadow: 0 0 0 0 rgba(51, 107, 211, 0); }
+  30%  { box-shadow: 0 0 0 4px rgba(51, 107, 211, 0.15); }
+  100% { box-shadow: 0 0 0 0 rgba(51, 107, 211, 0); }
+}
 
-
-/* ------------------------------------------
-   Контентные блоки
-   ------------------------------------------ */
-
-div.definition  { animation: fadeLeft 0.45s ease 0.05s both; }
-div.theorem     { animation: fadeLeft 0.45s ease 0.1s  both; }
-div.lemma       { animation: fadeLeft 0.45s ease 0.1s  both; }
-div.axiom       { animation: fadeLeft 0.45s ease 0.1s  both; }
-div.citation    { animation: fadeLeft 0.45s ease 0.1s  both; }
-div.proof       { animation: fadeLeft 0.45s ease 0.1s  both; }
-div.notice      { animation: fadeLeft 0.45s ease 0.1s  both; }
-div.advice      { animation: fadeLeft 0.45s ease 0.1s  both; }
-div.attention   { animation: fadeLeft 0.45s ease 0.1s  both; }
-div.task        { animation: fadeLeft 0.45s ease 0.1s  both; }
-div.example     { animation: fadeLeft 0.45s ease 0.1s  both; }
-div.conclusion  { animation: fadeLeft 0.45s ease 0.1s  both; }
-div.internet    { animation: fadeLeft 0.45s ease 0.1s  both; }
-div.question    { animation: fadeLeft 0.45s ease 0.1s  both; }
-div.one_question { animation: fadeLeft 0.45s ease 0.1s both; }
-div.literature  { animation: fadeLeft 0.45s ease 0.1s  both; }
-
+.anim-highlight {
+  animation: highlightBlock 1s ease forwards !important;
+}
 
 /* ------------------------------------------
    Hover на блоках
@@ -70,7 +98,6 @@ div.one_question:hover {
   box-shadow: 0 2px 14px rgba(0, 0, 0, 0.07);
 }
 
-
 /* ------------------------------------------
    Кнопки самоконтроля
    ------------------------------------------ */
@@ -87,7 +114,6 @@ div.one_question:hover {
   transform: scale(0.97);
 }
 
-
 /* ------------------------------------------
    Ссылки
    ------------------------------------------ */
@@ -99,7 +125,6 @@ a {
 a:hover {
   opacity: 0.75;
 }
-
 
 /* ------------------------------------------
    Изображения
@@ -114,7 +139,6 @@ p.img img:hover {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-
 /* ------------------------------------------
    Отключить для тех, кто против анимаций
    ------------------------------------------ */
@@ -123,5 +147,9 @@ p.img img:hover {
   *, *::before, *::after {
     animation: none !important;
     transition: none !important;
+  }
+
+  #read-progress {
+    transition: none;
   }
 }
