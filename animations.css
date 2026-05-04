@@ -1,155 +1,164 @@
-/* =============================================
-   АНИМАЦИИ ДЛЯ МЕТОДИЧЕК
-   ============================================= */
+(function () {
 
-/* ------------------------------------------
-   Прогресс-бар чтения
-   ------------------------------------------ */
+  /* ------------------------------------------
+     Прогресс-бар чтения
+     ------------------------------------------ */
 
-#read-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0%;
-  height: 3px;
-  background: #336bd3;
-  z-index: 9999;
-  transition: width 0.1s linear;
-}
+  var progressBar = document.createElement('div');
+  progressBar.id = 'read-progress';
+  document.body.appendChild(progressBar);
 
-/* ------------------------------------------
-   Счётчик прочитанных блоков
-   ------------------------------------------ */
-
-#block-counter {
-  position: fixed;
-  bottom: 32px;
-  right: 32px;
-  padding: 10px 18px;
-  background: white;
-  border: 1px solid #dadde5;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  font-family: Montserrat, Arial, sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  color: #1b1b1b;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  pointer-events: none;
-  z-index: 9998;
-}
-
-#block-counter.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-#block-counter span {
-  color: #336bd3;
-}
-
-/* ------------------------------------------
-   Keyframes появления
-   ------------------------------------------ */
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeLeft {
-  from { opacity: 0; transform: translateX(-12px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-/* ------------------------------------------
-   Подсветка блока при появлении
-   ------------------------------------------ */
-
-@keyframes highlightBlock {
-  0%   { box-shadow: 0 0 0 0 rgba(51, 107, 211, 0); }
-  30%  { box-shadow: 0 0 0 4px rgba(51, 107, 211, 0.15); }
-  100% { box-shadow: 0 0 0 0 rgba(51, 107, 211, 0); }
-}
-
-.anim-highlight {
-  animation: highlightBlock 1s ease forwards !important;
-}
-
-/* ------------------------------------------
-   Hover на блоках
-   ------------------------------------------ */
-
-div.definition, div.theorem, div.lemma, div.axiom,
-div.citation, div.proof, div.notice, div.advice,
-div.attention, div.task, div.example, div.conclusion,
-div.internet, div.literature, div.question, div.one_question {
-  transition: box-shadow 0.25s ease;
-}
-
-div.definition:hover, div.theorem:hover, div.lemma:hover,
-div.axiom:hover, div.citation:hover, div.proof:hover,
-div.notice:hover, div.advice:hover, div.attention:hover,
-div.task:hover, div.example:hover, div.conclusion:hover,
-div.internet:hover, div.literature:hover, div.question:hover,
-div.one_question:hover {
-  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.07);
-}
-
-/* ------------------------------------------
-   Кнопки самоконтроля
-   ------------------------------------------ */
-
-.test .testbuttons input[type="button"] {
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease;
-}
-
-.test .testbuttons input[type="button"]:hover {
-  box-shadow: 0 2px 8px rgba(60, 56, 141, 0.12);
-}
-
-.test .testbuttons input[type="button"]:active {
-  transform: scale(0.97);
-}
-
-/* ------------------------------------------
-   Ссылки
-   ------------------------------------------ */
-
-a {
-  transition: opacity 0.2s ease;
-}
-
-a:hover {
-  opacity: 0.75;
-}
-
-/* ------------------------------------------
-   Изображения
-   ------------------------------------------ */
-
-p.img img {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-p.img img:hover {
-  transform: scale(1.015);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-/* ------------------------------------------
-   Отключить для тех, кто против анимаций
-   ------------------------------------------ */
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation: none !important;
-    transition: none !important;
+  function updateProgress() {
+    var scrollTop = window.scrollY || document.documentElement.scrollTop;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = Math.min(progress, 100) + '%';
   }
 
-  #read-progress {
-    transition: none;
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+
+  /* ------------------------------------------
+     Счётчик прочитанных блоков
+     ------------------------------------------ */
+
+  var counter = document.createElement('div');
+  counter.id = 'block-counter';
+  counter.innerHTML = 'Прочитано блоков: <span id="block-count">0</span>';
+  document.body.appendChild(counter);
+
+  var countEl = document.getElementById('block-count');
+  var readCount = 0;
+
+  function updateCounter() {
+    countEl.textContent = readCount;
+    counter.classList.add('visible');
   }
-}
+
+
+  /* ------------------------------------------
+     Анимация появления + подсветка
+     ------------------------------------------ */
+
+  var selectors = [
+    'h1', 'h2', 'h3', 'h4',
+    'div.nonum_head',
+    'div.definition',
+    'div.theorem',
+    'div.lemma',
+    'div.axiom',
+    'div.citation',
+    'div.proof',
+    'div.notice',
+    'div.advice',
+    'div.attention',
+    'div.task',
+    'div.example',
+    'div.conclusion',
+    'div.internet',
+    'div.literature',
+    'div.question',
+    'div.one_question'
+  ];
+
+  var blockSelectors = [
+    'div.definition', 'div.theorem', 'div.lemma', 'div.axiom',
+    'div.citation', 'div.proof', 'div.notice', 'div.advice',
+    'div.attention', 'div.task', 'div.example', 'div.conclusion',
+    'div.internet', 'div.literature', 'div.question', 'div.one_question'
+  ];
+
+  var targets = document.querySelectorAll(selectors.join(', '));
+
+  if (!('IntersectionObserver' in window)) {
+    targets.forEach(function (el) {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+    return;
+  }
+
+  targets.forEach(function (el) {
+    el.style.opacity = '0';
+    el.style.transform = el.tagName.match(/^H[1-4]$/) || el.classList.contains('nonum_head')
+      ? 'translateY(10px)'
+      : 'translateX(-12px)';
+    el.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+  });
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+
+      var el = entry.target;
+
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+
+      /* Подсветка только для контентных блоков */
+      var isBlock = blockSelectors.some(function (sel) {
+        var tag = sel.split('.')[0];
+        var cls = sel.split('.')[1];
+        return el.tagName.toLowerCase() === tag && el.classList.contains(cls);
+      });
+
+      if (isBlock) {
+        el.classList.remove('anim-highlight');
+        void el.offsetWidth; /* reflow для перезапуска анимации */
+        el.classList.add('anim-highlight');
+
+        readCount++;
+        updateCounter();
+
+        el.addEventListener('animationend', function () {
+          el.classList.remove('anim-highlight');
+        }, { once: true });
+      }
+
+      observer.unobserve(el);
+    });
+  }, { threshold: 0.08 });
+
+  targets.forEach(function (el) {
+    observer.observe(el);
+  });
+
+
+  /* ------------------------------------------
+     3D tilt при наведении мыши
+     ------------------------------------------ */
+
+  var tiltSelectors = [
+    'div.definition', 'div.theorem', 'div.lemma', 'div.axiom',
+    'div.citation', 'div.proof', 'div.notice', 'div.advice',
+    'div.attention', 'div.task', 'div.example', 'div.conclusion',
+    'div.internet', 'div.literature', 'div.question', 'div.one_question'
+  ];
+
+  var tiltBlocks = document.querySelectorAll(tiltSelectors.join(', '));
+
+  var MAX_TILT = 4; /* градусов — не переборщить */
+
+  tiltBlocks.forEach(function (el) {
+    el.style.willChange = 'transform';
+
+    el.addEventListener('mousemove', function (e) {
+      var rect = el.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width  - 0.5; /* -0.5 .. 0.5 */
+      var y = (e.clientY - rect.top)  / rect.height - 0.5;
+
+      var rotateX = (-y * MAX_TILT).toFixed(2); /* вверх/вниз */
+      var rotateY = ( x * MAX_TILT).toFixed(2); /* влево/вправо */
+
+      el.style.transition = 'transform 0.1s ease';
+      el.style.transform = 'perspective(800px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg)';
+    });
+
+    el.addEventListener('mouseleave', function () {
+      el.style.transition = 'transform 0.4s ease';
+      el.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg)';
+    });
+  });
+
+})();
